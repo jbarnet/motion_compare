@@ -1,4 +1,5 @@
 from datetime import datetime
+from math import hypot
 
 def infer_matching_timeseries(desired_data, other_data):
   result = []
@@ -21,12 +22,39 @@ def infer_matching_timeseries(desired_data, other_data):
       elif post_offset == 0:
         result.append(item_after)
         continue
+      x = (item_before['x'] * (pre_offset / time_between)) + (item_after['x'] * (post_offset / time_between))
+      y = (item_before['y'] * (pre_offset / time_between)) + (item_after['y'] * (post_offset / time_between))
       
-      
-      
-  
+      results.append({
+        'id': item_before['id'],
+        'timestamp': desired_item['timestamp'],
+        'x': x,
+        'y': y
+      })
+  return results
 
-def motion_compare(desired_id, data_points):
+
+def parse_overlap(desired_data, other_infered_data):
+  results = []
+  for other in other_infered_data:
+    for desired in desired_data:
+      if desired['timestamp'] == other['timestamp']:
+        results.append(desired)
+        continue
+  return results
+
+def compute_distances(desired_overlap_data, other_infered_data):
+  results = []
+  for other in other_infered_data:
+    for desired in desired_data:
+      if desired['timestamp'] == other['timestamp']:
+        distance = hypot(desired['x'] - other['x'], desired['y'] = other['y'])
+        results.append(distance)
+        continue
+  return results
+    
+
+def motion_compare(desired_id, data_points, min_overlap=3):
   data_by_ids = {}
   for data_point in data_points:
     id = data_point['id']
@@ -41,13 +69,31 @@ def motion_compare(desired_id, data_points):
   
   desired_data = data_by_ids[desired_id]
   
-  infered_data = {}
+  distances_by_id = []
   for id, data in data_by_ids.items():
     if id == desired_id:
       continue
-    infered_data[id] = infer_matching_timeseries(desired_data, data)
+    other_infered_data = infer_matching_timeseries(desired_data, data)
+    desired_overlap_data = parse_overlap(desired_data, other_infered_data)
+    distances = compute_distances(desired_overlap_data, other_infered_data)
+    if len(distances) < min_overlap:
+      continue
+    distances_by_id.append({
+      'id': id,
+      'distances': distances
+    })
   
-  distance_by_id = {}
+  sorted_avg_distance = sorted(
+    distances_by_id, 
+    key=lambda x: sum(x['distances'] / len(x['distances'])),
+    reverse=True
+  )
+  
+  return map(lambda x: x['id'], sorted_avg_distance)
+    
+ 
+ 
+  
   
     
     
