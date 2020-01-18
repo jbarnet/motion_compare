@@ -100,16 +100,16 @@ def motion_compare(desired_id, data_points, min_overlap=3):
 start_time = datetime.utcnow().replace(tzinfo=timezone.utc)
 def gen_test_data():
   data = []
-  for id in range(20):
+  for id in range(30):
     for seconds in range(4):
       data.append({
         'id': str(id),
         'timestamp': start_time + timedelta(seconds=seconds + id/10),
-        'x': seconds,
-        'y': seconds    
+        'x': seconds + id,
+        'y': seconds + id   
       })
   return data
 
 
 
-print(motion_compare('0', gen_test_data()))
+print(motion_compare('15', gen_test_data()))
