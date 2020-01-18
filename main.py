@@ -30,6 +30,7 @@ def infer_matching_timeseries(desired_data, other_data):
       elif other_item['timestamp'] > desired_item['timestamp']:
         item_after = other_item
         break
+    
     if item_equal:
       results.append(item_equal)  
     elif item_before and item_after:
@@ -37,8 +38,9 @@ def infer_matching_timeseries(desired_data, other_data):
       # not intutive but we use the inverse offsets for weighting the calculation
       before_multiplier = (item_after['timestamp'] - desired_item['timestamp']).total_seconds() / time_between
       after_multiplier = (desired_item['timestamp'] - item_before['timestamp']).total_seconds() / time_between
-      x = (item_before['x'] * before_multiplier) + (item_after['x'] * before_multiplier)
-      y = (item_before['y'] * after_multiplier) + (item_after['y'] * after_multiplier) 
+      x = (item_before['x'] * before_multiplier) + (item_after['x'] * after_multiplier)
+      y = (item_before['y'] * before_multiplier) + (item_after['y'] * after_multiplier) 
+     
       results.append({
         'id': item_before['id'],
         'timestamp': desired_item['timestamp'],
@@ -85,8 +87,7 @@ def motion_compare(desired_id, data_points, min_overlap=3):
         continue
       distances_by_id.append({
         'id': id,
-        'distances': distances,
-        'average': sum(distances)/len(distances)
+        'average': round(sum(distances)/len(distances),2)
       })
 
   sorted_avg_distance = sorted(
@@ -99,13 +100,13 @@ def motion_compare(desired_id, data_points, min_overlap=3):
 start_time = datetime.utcnow().replace(tzinfo=timezone.utc)
 def gen_test_data():
   data = []
-  for id in range(3):
+  for id in range(20):
     for seconds in range(4):
       data.append({
         'id': str(id),
-        'timestamp': datetime.utcnow().replace(tzinfo=timezone.utc) + timedelta(seconds=seconds),
-        'x': seconds+id,
-        'y': seconds+id    
+        'timestamp': start_time + timedelta(seconds=seconds + id/10),
+        'x': seconds,
+        'y': seconds    
       })
   return data
 
