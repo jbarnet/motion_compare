@@ -63,7 +63,7 @@ def compute_distances(desired_overlap_data, other_infered_data):
   for other in other_infered_data:
     for desired in desired_data:
       if desired['timestamp'] == other['timestamp']:
-        distance = hypot(desired['x'] - other['x'], desired['y'] = other['y'])
+        distance = hypot(desired['x'] - other['x'], desired['y'] - other['y'])
         results.append(distance)
         continue
   return results
