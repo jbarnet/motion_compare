@@ -109,7 +109,7 @@ def gen_test_data():
         'y': seconds+id    
       })
 
-motion_distance('1', gen_test_data())
+motion_compare('1', gen_test_data())
 
  
  
