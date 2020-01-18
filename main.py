@@ -8,7 +8,7 @@ def partition_data_by_ids_and_sort(data_points):
     id = data_point['id']
     existing = data_by_ids.get(id, None)
     if existing:
-      data_by_ids[id] = existing.append(data_point)
+      existing.append(data_point)
     else:
       data_by_ids[id] = [data_point]
   for id, data in data_by_ids.items():
@@ -22,9 +22,9 @@ def infer_matching_timeseries(desired_data, other_data):
     item_before = None
     item_after = None
     for other_item in other_data:
-      if other_item.timestamp <= desired_item.timestamp:
+      if other_item['timestamp'] <= desired_item['timestamp']:
         item_before = other_item
-      if other_item.timestamp >= desired_item.timestamp:
+      if other_item['timestamp'] >= desired_item['timestamp']:
         item_after = other_item
         break
     if item_before and item_after:
@@ -108,6 +108,8 @@ def gen_test_data():
         'x': seconds+id,
         'y': seconds+id    
       })
+  return data
+
 
 motion_compare('1', gen_test_data())
 
