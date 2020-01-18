@@ -17,7 +17,7 @@ def partition_data_by_ids_and_sort(data_points):
 
 
 def infer_matching_timeseries(desired_data, other_data):
-  result = []
+  results = []
   for desired_item in desired_data:
     item_before = None
     item_after = None
@@ -32,10 +32,10 @@ def infer_matching_timeseries(desired_data, other_data):
       pre_offset = (desired_item['timestamp'] - item_before['timestamp'])
       post_offset = (item_after['timestamp'] - desired_item['timestamp'])
       if pre_offset == 0:
-        result.append(item_before)
+        results.append(item_before)
         continue
       elif post_offset == 0:
-        result.append(item_after)
+        results.append(item_after)
         continue
       x = (item_before['x'] * (pre_offset / time_between)) + (item_after['x'] * (post_offset / time_between))
       y = (item_before['y'] * (pre_offset / time_between)) + (item_after['y'] * (post_offset / time_between)) 
