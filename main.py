@@ -34,10 +34,11 @@ def infer_matching_timeseries(desired_data, other_data):
       results.append(item_equal)  
     elif item_before and item_after:
       time_between = (item_after['timestamp'] - item_before['timestamp']).total_seconds()
-      pre_offset = (desired_item['timestamp'] - item_before['timestamp']).total_seconds()
-      post_offset = (item_after['timestamp'] - desired_item['timestamp']).total_seconds()
-      x = (item_before['x'] * (pre_offset / time_between)) + (item_after['x'] * (post_offset / time_between))
-      y = (item_before['y'] * (pre_offset / time_between)) + (item_after['y'] * (post_offset / time_between)) 
+      # not intutive but we use the inverse offsets for weighting the calculation
+      before_multiplier = (item_after['timestamp'] - desired_item['timestamp']).total_seconds() / time_between
+      after_multiplier = (desired_item['timestamp'] - item_before['timestamp']).total_seconds() / time_between
+      x = (item_before['x'] * before_multiplier) + (item_after['x'] * before_multiplier)
+      y = (item_before['y'] * after_multiplier) + (item_after['y'] * after_multiplier) 
       results.append({
         'id': item_before['id'],
         'timestamp': desired_item['timestamp'],
@@ -98,26 +99,16 @@ def motion_compare(desired_id, data_points, min_overlap=3):
 start_time = datetime.utcnow().replace(tzinfo=timezone.utc)
 def gen_test_data():
   data = []
-  for id in range(2):
-    for seconds in range(3):
+  for id in range(3):
+    for seconds in range(4):
       data.append({
         'id': str(id),
-        'timestamp': start_time + timedelta(seconds=seconds),
-        'x': seconds,
-        'y': seconds    
+        'timestamp': datetime.utcnow().replace(tzinfo=timezone.utc) + timedelta(seconds=seconds),
+        'x': seconds+id,
+        'y': seconds+id    
       })
   return data
 
 
 
-print(motion_compare('1', gen_test_data()))
-
- 
- 
-  
-  
-    
-    
-  
-  
-      
+print(motion_compare('0', gen_test_data()))
