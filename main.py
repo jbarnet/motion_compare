@@ -72,6 +72,11 @@ def compute_distances(desired_overlap_data, other_infered_data):
     
 
 def motion_compare(desired_id, data_points, min_overlap=3):
+  """
+  Takes an id and looks though the data_points to compare the timeseries x,y of each 
+  id to see which have the closest average distance during time periods of overlap.
+  data points is a dictionary with keys id, timestamp, x, y.
+  """
   data_by_ids = partition_data_by_ids_and_sort(data_points)
   desired_data = data_by_ids.get(desired_id, None)
   distances_by_id = []
