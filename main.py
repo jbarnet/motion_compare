@@ -15,13 +15,13 @@ def partition_data_by_ids_and_sort(data_points):
   return data_by_ids
 
 
-def infer_matching_timeseries(desired_data, other_data):
+def infer_matching_timeseries(desired_data, other_sorted_data):
   results = []
   for desired_item in desired_data:
     item_equal = None
     item_before = None
     item_after = None
-    for other_item in other_data:
+    for other_item in other_sorted_data:
       if other_item['timestamp'] == desired_item['timestamp']:
         item_equal = other_item
         break
@@ -29,6 +29,7 @@ def infer_matching_timeseries(desired_data, other_data):
         item_before = other_item
       elif other_item['timestamp'] > desired_item['timestamp']:
         item_after = other_item
+        break
     
     if item_equal:
       results.append(item_equal)  
@@ -52,7 +53,7 @@ def infer_matching_timeseries(desired_data, other_data):
 def compute_distances(desired_data, other_infered_data):
   results = []
   for other in other_infered_data:
-    for desired in desired_overlap_data:
+    for desired in desired_data:
       if desired['timestamp'] == other['timestamp']:
         distance = hypot(desired['x'] - other['x'], desired['y'] - other['y'])
         results.append(distance)
@@ -82,15 +83,14 @@ def motion_compare(desired_id, data_points, min_overlap=3):
         'id': id,
         'average': round(sum(distances)/len(distances),2)
       })
-
-  sorted_avg_distance = sorted(
+  
+  return sorted(
     distances_by_id, 
     key=lambda x: x['average']
   )
   
-  return sorted_avg_distance
-    
-start_time = datetime.utcnow().replace(tzinfo=timezone.utc)
+  
+start_time = datetime.now(timezone.utc)
 def gen_test_data():
   data = []
   for id in range(30):
