@@ -29,7 +29,6 @@ def infer_matching_timeseries(desired_data, other_data):
         item_before = other_item
       elif other_item['timestamp'] > desired_item['timestamp']:
         item_after = other_item
-        break
     
     if item_equal:
       results.append(item_equal)  
@@ -50,17 +49,7 @@ def infer_matching_timeseries(desired_data, other_data):
   return results
 
 
-def parse_overlap(desired_data, other_infered_data):
-  results = []
-  for other in other_infered_data:
-    for desired in desired_data:
-      if desired['timestamp'] == other['timestamp']:
-        results.append(desired)
-        continue
-  return results
-
-
-def compute_distances(desired_overlap_data, other_infered_data):
+def compute_distances(desired_data, other_infered_data):
   results = []
   for other in other_infered_data:
     for desired in desired_overlap_data:
@@ -86,8 +75,7 @@ def motion_compare(desired_id, data_points, min_overlap=3):
       if id == desired_id:
         continue
       other_infered_data = infer_matching_timeseries(desired_data, data)
-      desired_overlap_data = parse_overlap(desired_data, other_infered_data)
-      distances = compute_distances(desired_overlap_data, other_infered_data)
+      distances = compute_distances(desired_data, other_infered_data)
       if len(distances) < min_overlap:
         continue
       distances_by_id.append({
